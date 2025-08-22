@@ -2,3 +2,5 @@ pyserial
 numpy
 pandas
 scipy
+jupyter
+matplotlib
