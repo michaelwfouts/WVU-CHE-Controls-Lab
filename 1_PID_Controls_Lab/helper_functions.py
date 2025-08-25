@@ -286,7 +286,10 @@ def ziegler_nichols_tuning(ser, setpoint=1, initial_Kp=1, max_iterations=100, dt
     data = pd.DataFrame(columns=['Timestamp', 'PWM Value', 'Height Tank 2', 'Kp'])
     
     for i in range(max_iterations):
-        height_tank_2 = read_from_serial(ser)
+        # Read the tuple and extract the first element for Tank 2
+        height_tank_2_tuple = read_from_serial(ser)
+        height_tank_2 = height_tank_2_tuple[0]  # Extract the first element for Tank 2
+        
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         new_data = pd.DataFrame([{'Timestamp': timestamp, 'PWM Value': pwm_value, 'Height Tank 2': height_tank_2, 'Kp': Kp}])
         data = pd.concat([data, new_data], ignore_index=True)
@@ -297,7 +300,7 @@ def ziegler_nichols_tuning(ser, setpoint=1, initial_Kp=1, max_iterations=100, dt
         measured_values.append(height_tank_2)
 
         time.sleep(dt)
-                        
+                         
         # Check if Oscillation Started
         if i > 1 and not oscillation_started:
             if (measured_values[-1] - setpoint) * (measured_values[-2] - setpoint) < 0:
@@ -321,11 +324,8 @@ def ziegler_nichols_tuning(ser, setpoint=1, initial_Kp=1, max_iterations=100, dt
 
     # After completed tuning, provide results
     if K_crit and T_crit:
-        Kp_final = 0.6 * K_crit
-        Ki_final = 2 * Kp_final / T_crit
-        Kd_final = Kp_final * T_crit / 8
-        print(f"Ziegler-Nichols tuning results: Kp={Kp_final}, Ki={Ki_final}, Kd={Kd_final}")
-        return Kp_final, Ki_final, Kd_final, data
+        print(f"Ziegler-Nichols tuning results: K Ultimate={K_crit}, T Ultimate={T_crit}")
+        return K_crit, T_crit, data
     else:
         print("Oscillations did not start.")
         return None, None, None, data
