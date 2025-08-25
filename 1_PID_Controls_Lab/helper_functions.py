@@ -328,4 +328,4 @@ def ziegler_nichols_tuning(ser, setpoint=1, initial_Kp=1, max_iterations=100, dt
         return K_crit, T_crit, data
     else:
         print("Oscillations did not start.")
-        return None, None, None, data
+        return None, None, data
