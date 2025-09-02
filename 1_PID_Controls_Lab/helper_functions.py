@@ -318,13 +318,14 @@ def ziegler_nichols_tuning(ser, setpoint=1, initial_Kp=1, max_iterations=100, dt
                 K_crit = Kp
                 break
         
-        # Update Kp for next iteration
-        Kp += 0.1
-        pid.Kp = Kp
+        # Update Kp for next iteration if oscillations haven't started
+        if not oscillation_started:
+            Kp += 0.1
+            pid.Kp = Kp
 
     # After completed tuning, provide results
     if K_crit and T_crit:
-        print(f"Ziegler-Nichols tuning results: K Ultimate={K_crit}, T Ultimate={T_crit}")
+        print(f"Ziegler-Nichols tuning results: K Ultimate={K_crit}, P Ultimate={T_crit}")
         return K_crit, T_crit, data
     else:
         print("Oscillations did not start.")
