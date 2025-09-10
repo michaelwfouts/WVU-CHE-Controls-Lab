@@ -88,9 +88,12 @@ except Exception as e:
     print(f"An unexpected error occurred: {e}")
 finally:
     ser.close()  # Close the serial port
+    hf.send_pwm_value(ser, 0)  # Ensure the control valve is fully closed
     # Ensure the directory exists or handle the error
     try:
-        data.to_csv('pid_data.csv', index=False)  # Save the DataFrame to a CSV file
-        print(f"Data collected for {DATA_COLLECTION_DURATION} seconds (or until interrupted) and saved to 'pid_data.csv'.")
+        # Save csv with timestamp to avoid overwriting
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        data.to_csv(f'pid_data_{timestamp}.csv', index=False)
+        print(f"Data collected for {DATA_COLLECTION_DURATION} seconds (or until interrupted) and saved to 'pid_data_{timestamp}.csv'.")
     except Exception as e:
         print(f"Error saving data to CSV: {e}")
